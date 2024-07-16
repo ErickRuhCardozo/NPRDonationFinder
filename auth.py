@@ -37,12 +37,12 @@ def login(user: User) -> bool | Session:
         response = session.post('https://authz.identidadedigital.pr.gov.br/cidadao_authz/api/v1/authorize', params=url.query, data=payload)
 
         if response.status_code != 200:
-            print('Server Down, aborting.')
+            print('Server Down, Aborting')
             return False
 
         if 'Ops!' in response.text:
-            print('Finalizing active session...')
+            print(f'Finalizing active session for user: {user.name}...')
             session.get('https://notaparana.pr.gov.br/nfprweb/publico/sair')
         elif 'MINHA CONTA CORRENTE' in response.text:
-            print('Successfully Logged-in!')
+            print(f'Successfully Logged-in user: {user.name}!')
             return session
