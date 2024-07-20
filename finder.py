@@ -53,13 +53,13 @@ def main():
 
         donations.append({user.name: []})
         date = datetime.today()
-        failed_download_attempts = 0
+        failed_downloads = 0
 
-        while failed_download_attempts < MAX_DOWNLOAD_ATTEMPTS:
+        while failed_downloads < MAX_DOWNLOAD_ATTEMPTS:
             if donation_count(session, date) == 0 or (filename := dl.download_donations(session, date) == False):
                 print(f'Could not download donations of user: {user.name}, for the period: {date}. Skipping...')
                 date = date - datedelta(months=1)
-                failed_download_attempts += 1
+                failed_downloads += 1
                 continue
 
             df = pd.read_csv(filename, encoding='iso8859-1', skiprows=1, sep=';')
