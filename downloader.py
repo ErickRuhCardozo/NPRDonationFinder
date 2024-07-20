@@ -5,18 +5,9 @@
 from requests import Session
 from datetime import date
 from tempfile import NamedTemporaryFile
-import json
 
 
 def download_donations(session: Session, date: date) -> bool | str:
-    """
-    Attempts to download a donation report. On success, returns the
-    path to the downloaded report. If the request status code is not
-    200 or the total records for the queried date are 0, returns False.
-    """
-    if get_donations_count(session, date) == 0:
-        return False
-
     period = f'{date.month:02}/{date.year}'
     url = f'https://notaparana.pr.gov.br/nfprweb/RelatorioDocFiscalDoado?periodo={period}'
     print(f'Attempting download donation resume for period: {period}')
