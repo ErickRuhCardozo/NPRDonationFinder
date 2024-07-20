@@ -3,16 +3,29 @@
 # Description: This module attempts to find the last time an EIN appears in a donation.
 
 import json
+
+from requests import Session
 import auth
 import pandas as pd
 import downloader as dl
-from datetime import datetime
+from datetime import date, datetime
 from dateutil.relativedelta import relativedelta as datedelta
 from pprint import PrettyPrinter
 
 
 EIN_SOUGHT = ''
 MAX_DOWNLOAD_ATTEMPTS = 3 # How many download attempts in a row before skipping to next user
+
+
+def get_donations_count(session: Session, date: date) -> int:
+    params = {'mes': date.month, 'ano': date.year, 'draw': 1, 'start': 0, 'length': 1}
+    response = session.get('https://notaparana.pr.gov.br/nfprweb/app/v1/datatable/documentoFiscalDoado/', params=params)
+
+    if not response.ok:
+        return 0
+
+    response = json.loads(response.text)
+    return response['recordsTotal']
 
 
 def load_users() -> list[auth.User]:
@@ -34,7 +47,7 @@ def main():
     donations = [] # Date of donations were EIN_SOUGHT was found
 
     for user in users:
-        if (session := auth.login(user)) == False:
+        if session := auth.login(user) == False:
             print(f'Could not log-in user: {user.name}. Skipping...')
             continue
 
@@ -43,7 +56,7 @@ def main():
         failed_download_attempts = 0
 
         while failed_download_attempts < MAX_DOWNLOAD_ATTEMPTS:
-            if (filename := dl.download_donations(session, date)) == False:
+            if get_donations_count(session, date) == 0 or (filename := dl.download_donations(session, date) == False):
                 print(f'Could not download donations of user: {user.name}, for the period: {date}. Skipping...')
                 date = date - datedelta(months=1)
                 failed_download_attempts += 1

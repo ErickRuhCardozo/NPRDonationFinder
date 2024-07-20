@@ -8,17 +8,6 @@ from tempfile import NamedTemporaryFile
 import json
 
 
-def get_donations_count(session: Session, date: date) -> int:
-    params = {'mes': date.month, 'ano': date.year, 'draw': 1, 'start': 0, 'length': 1}
-    response = session.get('https://notaparana.pr.gov.br/nfprweb/app/v1/datatable/documentoFiscalDoado/', params=params)
-
-    if not response.ok:
-        return 0
-
-    response = json.loads(response.text)
-    return response['recordsTotal']
-
-
 def download_donations(session: Session, date: date) -> bool | str:
     """
     Attempts to download a donation report. On success, returns the
