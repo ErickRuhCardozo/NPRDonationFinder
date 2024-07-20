@@ -13,7 +13,7 @@ from dateutil.relativedelta import relativedelta as datedelta
 from pprint import PrettyPrinter
 
 
-EIN_SOUGHT = ''
+EIN_SOUGHT = '' # Formatted Employer Identification Number (CNPJ)
 MAX_DOWNLOAD_ATTEMPTS = 3 # How many download attempts in a row before skipping to next user
 
 
@@ -47,7 +47,7 @@ def main():
     donations = [] # Date of donations were EIN_SOUGHT was found
 
     for user in users:
-        if session := auth.login(user) == False:
+        if (session := auth.login(user)) == False:
             print(f'Could not log-in user: {user.name}. Skipping...')
             continue
 
@@ -56,8 +56,8 @@ def main():
         failed_downloads = 0
 
         while failed_downloads < MAX_DOWNLOAD_ATTEMPTS:
-            if donation_count(session, date) == 0 or (filename := dl.download_donations(session, date) == False):
-                print(f'Could not download donations of user: {user.name}, for the period: {date}. Skipping...')
+            if donation_count(session, date) == 0 or (filename := dl.download_donations(session, date)) == False:
+                print(f'Could not download donations of user: {user.name}, for the period: {date.date()}. Skipping...')
                 date = date - datedelta(months=1)
                 failed_downloads += 1
                 continue
