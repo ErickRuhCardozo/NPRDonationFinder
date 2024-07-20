@@ -17,7 +17,7 @@ EIN_SOUGHT = ''
 MAX_DOWNLOAD_ATTEMPTS = 3 # How many download attempts in a row before skipping to next user
 
 
-def get_donations_count(session: Session, date: date) -> int:
+def donation_count(session: Session, date: date) -> int:
     params = {'mes': date.month, 'ano': date.year, 'draw': 1, 'start': 0, 'length': 1}
     response = session.get('https://notaparana.pr.gov.br/nfprweb/app/v1/datatable/documentoFiscalDoado/', params=params)
 
@@ -56,7 +56,7 @@ def main():
         failed_download_attempts = 0
 
         while failed_download_attempts < MAX_DOWNLOAD_ATTEMPTS:
-            if get_donations_count(session, date) == 0 or (filename := dl.download_donations(session, date) == False):
+            if donation_count(session, date) == 0 or (filename := dl.download_donations(session, date) == False):
                 print(f'Could not download donations of user: {user.name}, for the period: {date}. Skipping...')
                 date = date - datedelta(months=1)
                 failed_download_attempts += 1
