@@ -43,6 +43,9 @@ def wrangle_donations(df: pd.DataFrame):
 
 
 def main():
+    if EIN_SOUGHT == '':
+        raise Exception('EIN was not specified')
+    
     users = load_users()
     donations = [] # Date of donations were EIN_SOUGHT was found
 
